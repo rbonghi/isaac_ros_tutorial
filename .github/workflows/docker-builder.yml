@@ -11,7 +11,7 @@ jobs:
     - name: Extract matrix
       id: set-matrix
       run: |
-        bash scripts/ci_builder.sh
+        TERM=xterm bash scripts/ci_builder.sh
         echo "::set-output name=matrix::$(cat matrix.json)"
         #echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
 

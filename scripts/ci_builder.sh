@@ -45,7 +45,7 @@ main()
 
     # https://github.blog/changelog/2020-04-15-github-actions-new-workflow-features/
     # https://docs.github.com/en/actions/learn-github-actions/expressions#fromjson
-    echo -e "{\n\t\"include\":[" > $json_file
+    echo "{\"include\":[" > $json_file
     # Worker to build all docker file
     for((i=1;i<=${#dirs[@]};i++))
     do
@@ -58,7 +58,7 @@ main()
         if [ $i = ${#dirs[@]} ] ; then
             separator="]"
         fi
-        echo -e "\t\t{\"project\": \"$(basename $folder)\"}$separator" >> $json_file
+        echo "{\"project\": \"$(basename $folder)\"}$separator" >> $json_file
     done
     echo "}" >> $json_file
 
