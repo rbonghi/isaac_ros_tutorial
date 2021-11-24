@@ -6,8 +6,14 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-    - id: set-matrix
-      run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+    - name: Checkout code
+      uses: actions/checkout@v2.4.0
+    - name: Extract matrix
+      id: set-matrix
+      run: |
+        bash scripts/ci_builder.sh
+        echo $(cat matrix.json)
+        echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
 
   isaac-ros-tutorials:
     needs: matrix-builder
