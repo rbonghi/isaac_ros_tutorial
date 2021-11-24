@@ -12,8 +12,8 @@ jobs:
       id: set-matrix
       run: |
         bash scripts/ci_builder.sh
-        echo $(cat matrix.json)
-        echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+        echo "::set-output name=matrix::$(cat matrix.json)"
+        #echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
 
   isaac-ros-tutorials:
     needs: matrix-builder
@@ -21,4 +21,4 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.matrix-builder.outputs.matrix)}}
     steps:
-    - run: build
+    - run: echo "run "
