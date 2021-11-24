@@ -16,10 +16,13 @@ jobs:
         TERM=xterm bash .github/ci_builder.sh
         echo "::set-output name=matrix::$(cat matrix.json)"
 
-  isaac-ros-tutorials:
+  isaac-ros-tutorial:
     needs: matrix-builder
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{fromJson(needs.matrix-builder.outputs.matrix)}} #variable: project
     steps:
-    - run: echo "run ${{ matrix.project }}"
+    - name: Checkout code
+      uses: actions/checkout@v2.4.0
+    - name: "Build ${{ matrix.project }}"
+      run: echo "run ${{ matrix.project }}"

@@ -36,7 +36,7 @@ main()
     for d in $local_folder/*/
     do
         # Exlude scripts folder
-        if [[ $d != *"scripts"* ]] ; then
+        if [[ $d =~ [0-9] ]] ; then
             dirs[i++]="${d%/}"
         fi
     done
