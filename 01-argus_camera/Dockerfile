@@ -68,7 +68,7 @@ RUN apt-get update && \
 # Build Isaac ROS package
 ENV ISAAC_ROS_WS /opt/isaac_ros_ws
 ARG ROSINSTALL=argus_camera.rosinstall
-# Copy wstool argus_camera.rosinstall
+# Copy wstool rosinstall
 COPY ${ROSINSTALL} ${ROSINSTALL}
 
 RUN apt-get update && \
