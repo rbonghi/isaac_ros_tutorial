@@ -11,14 +11,14 @@ jobs:
     - name: Extract matrix
       id: set-matrix
       run: |
-        TERM=xterm bash scripts/ci_builder.sh
+        TERM=xterm bash .github/ci_builder.sh
         echo "::set-output name=matrix::$(cat matrix.json)"
-        #echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
 
   isaac-ros-tutorials:
     needs: matrix-builder
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(needs.matrix-builder.outputs.matrix)}}
+      matrix: 
+        tutorial: ${{fromJson(needs.matrix-builder.outputs.matrix)}}
     steps:
-    - run: echo "run "
+    - run: echo "run ${{ matrix.tutorial }}"
