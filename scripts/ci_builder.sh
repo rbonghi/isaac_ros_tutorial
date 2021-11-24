@@ -29,6 +29,7 @@ reset=`tput sgr0`
 main()
 {
     local local_folder=$(pwd)
+    local json_file="matrix.json"
     # Build a list of folder available
     declare -a dirs
     local i=1
@@ -42,17 +43,25 @@ main()
 
     echo "There are ${green}${#dirs[@]} tutorials${reset} in the current path"
 
+    # https://github.blog/changelog/2020-04-15-github-actions-new-workflow-features/
+    # https://docs.github.com/en/actions/learn-github-actions/expressions#fromjson
+    echo -e "{\n\t\"include\":[" > $json_file
     # Worker to build all docker file
     for((i=1;i<=${#dirs[@]};i++))
     do
         local folder=${dirs[i]}
         echo "- ${bold}$i${reset} tutorial: ${green}$folder${reset}"
         # Run build docker
-        bash $local_folder/scripts/build_docker.sh $folder
-    done
+        # bash $local_folder/scripts/build_docker.sh $folder
 
-    # Return to main folder
-    cd $local_folder
+        local separator=","
+        if [ $i = ${#dirs[@]} ] ; then
+            separator="]"
+        fi
+        echo -e "\t\t{\"project\": \"$(basename $folder)\"}$separator" >> $json_file
+    done
+    echo "}" >> $json_file
+
 }
 
 main $@
