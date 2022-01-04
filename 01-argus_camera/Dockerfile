@@ -77,7 +77,9 @@ RUN apt-get update && \
     vcs import ${ISAAC_ROS_WS}/src < ${ROSINSTALL} && \
     rm -rf /var/lib/apt/lists/*
 # Pull LFS files
-RUN cd ${ISAAC_ROS_WS}/src/isaac_ros_common && git lfs pull
+RUN cd ${ISAAC_ROS_WS}/src/isaac_ros_common && git lfs pull && \
+    cd ${ISAAC_ROS_WS}/src/isaac_ros_image_pipeline && git lfs pull && \
+    cd ${ISAAC_ROS_WS}/src/isaac_ros_argus_camera && git lfs pull
 
 # Change workdir
 WORKDIR $ISAAC_ROS_WS
