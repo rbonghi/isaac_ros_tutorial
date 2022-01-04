@@ -2,6 +2,10 @@
 
 Example to setup a Dockerfile with all Isaac ROS packages to run an Isaac ROS argus camera
 
+This demo start your MIPI camera and rectify the image, the output is in `/image_raw`
+
+
+
 # Build
 
 ```

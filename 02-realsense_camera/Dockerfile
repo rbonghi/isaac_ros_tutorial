@@ -105,5 +105,11 @@ RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
 
 # source ros package from entrypoint
 RUN sed --in-place --expression \
-      '$isource "$ROS_WS/install/setup.bash"' \
+      '$isource "$ISAAC_ROS_WS/install/setup.bash"' \
       /ros_entrypoint.sh
+
+# https://docs.docker.com/engine/reference/builder/#stopsignal
+# https://hynek.me/articles/docker-signals/
+STOPSIGNAL SIGINT
+# run ros package launch file
+CMD ["ros2", "launch", "isaac_ros_visual_odometry", "isaac_ros_visual_odometry_realsense.launch.py"]
