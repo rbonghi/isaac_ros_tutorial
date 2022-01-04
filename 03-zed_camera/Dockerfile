@@ -17,3 +17,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
+
+# Jetpack 4.6
+# Docker file for aarch64 based Jetson device
+ARG BASE_IMAGE="dustynv/ros:foxy-ros-base-l4t-r32.6.1"
+FROM ${BASE_IMAGE}
+# Configuration CUDA
+ARG CUDA=10.2
+ARG L4T=r32.6
+
+################ Final enviroment setup ####################
+
+# source ros package from entrypoint
+RUN sed --in-place --expression \
+      '$isource "$ROS_WS/install/setup.bash"' \
+      /ros_entrypoint.sh
