@@ -39,7 +39,7 @@ jobs:
     - name: "Build docker ${{ matrix.project }}"
       run: |
         echo "run ${{ matrix.project }}"
-        # TERM=xterm bash scripts/build_docker.sh ${{ matrix.project }} -ci
+        TERM=xterm bash scripts/build_docker.sh ${{ matrix.project }} -ci
 
   make_release:
     name: Upload release
