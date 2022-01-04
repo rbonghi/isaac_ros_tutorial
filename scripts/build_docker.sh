@@ -19,6 +19,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+bold=`tput bold`
+red=`tput setaf 1`
+green=`tput setaf 2`
+yellow=`tput setaf 3`
+reset=`tput sgr0`
+
 # Get the entry in the dpkg status file corresponding to the provied package name
 # Prepend two newlines so it can be safely added to the end of any existing
 # dpkg/status file.
@@ -27,42 +33,120 @@ get_dpkg_status() {
     awk '/Package: '"$1"'/,/^$/' /var/lib/dpkg/status
 }
 
+usage()
+{
+    if [ "$1" != "" ]; then
+        echo "${red}$1${reset}" >&2
+    fi
+    
+    local name=$(basename ${0})
+    echo "Isaac_ros docker builder" >&2
+    echo "" >&2
+    echo "Commands:" >&2
+    echo "  -v                      |  Verbose. Schow extra info " >&2
+    echo "  -ci                     |  Build docker without cache " >&2
+    echo "  --push                  |  Push docker. Need to be logged in " >&2
+    echo "  --repo REPO_NAME        |  Set repository to push " >&2
+    echo "  --base-image BASE_IMAGE |  Change base image to build. Default=${bold}$BASE_IMAGE_DEFAULT${reset}" >&2
+}
+
 main()
 {
     local PLATFORM="$(uname -m)"
     # Check if is running on NVIDIA Jetson platform
     if [[ $PLATFORM != "aarch64" ]]; then
-        echo "Run this script only on NVIDIA Jetson platform"
+        echo "${red}Run this script only on ${bold}${green}NVIDIA${reset}${red} Jetson platform${reset}"
         exit 33
     fi
-
+    
     local REPO_NAME="rbonghi/isaac_ros_tutorial"
     local FOLDER=$1
-
+    
+    local PUSH=false
+    local VERBOSE=false
+    local CI_BUILD=false
+    # Base image
+    local BASE_IMAGE=""
+    # Decode all information from startup
+    while [ -n "$2" ]; do
+        case "$2" in
+            -h|--help) # Load help
+                usage
+                exit 0
+            ;;
+            -v)
+                VERBOSE=true
+            ;;
+            -ci)
+                CI_BUILD=true
+            ;;
+            --repo)
+                REPO_NAME=$3
+                shift 1
+            ;;
+            --push)
+                PUSH=true
+            ;;
+            --base-image)
+                BASE_IMAGE=$3
+                shift 1
+            ;;
+            *)
+                usage "[ERROR] Unknown option: $2" >&2
+                exit 1
+            ;;
+        esac
+        shift 1
+    done
+    
     if [[ -z $FOLDER ]] ; then
-        echo "FOLDER empty"
+        echo "${red}Please write one of the tutorial folder you want build${reset}"
         exit 33
     fi
 
-    local CI_OPTIONS=""
-    if $CI_BUILD ; then
-        # Set no-cache and pull before build
-        # https://newbedev.com/what-s-the-purpose-of-docker-build-pull
-        CI_OPTIONS="--no-cache --pull"
-    fi
-
-    # Extract Libraries info
-    local DPKG_STATUS=$(get_dpkg_status cuda-cudart-10-2)$(get_dpkg_status libcufft-10-2)
+    # replace all blanks
+    REPO_NAME=${REPO_NAME//_/-}
 
     # Extract tag name
     local TAG=${FOLDER#*-}
-    echo "build docker $REPO_NAME:$TAG"
-
-    # Check folders
-    cd $FOLDER
-    ls
-
-    #docker build $CI_OPTIONS -t $REPO_NAME:$TAG --build-arg "DPKG_STATUS=$DPKG_STATUS" .
+    # Strip "/"
+    TAG=${TAG%"/"}
+    # replace all blanks
+    TAG=${TAG//_/-}
+    
+    if ! $PUSH ; then
+        # Extract Libraries info
+        local DPKG_STATUS=$(get_dpkg_status cuda-cudart-10-2)$(get_dpkg_status libcufft-10-2)
+        if $VERBOSE ; then
+            echo "${yellow} Libraries ${reset}"
+            echo "$DPKG_STATUS"
+        fi
+        
+        local CI_OPTIONS=""
+        if $CI_BUILD ; then
+            # Set no-cache and pull before build
+            # https://newbedev.com/what-s-the-purpose-of-docker-build-pull
+            CI_OPTIONS="--no-cache --pull"
+        fi
+        
+        # move to folder
+        cd $FOLDER
+        if $VERBOSE ; then
+            echo "${yellow}- Change folder: $FOLDER ${reset}"
+            ls
+        fi
+        
+        echo "- Build repo ${green}$REPO_NAME:$TAG${reset}"
+        docker build $CI_OPTIONS -t $REPO_NAME:$TAG --build-arg "DPKG_STATUS=$DPKG_STATUS" $BASE_IMAGE_ARG .
+        
+        if $CI_BUILD ; then
+            echo "- ${bold}Prune${reset} old docker images"
+            docker image prune -f
+        fi
+    else
+        echo "- Push repo ${green}$REPO_NAME:$TAG${reset}"
+        docker image push $REPO_NAME:$TAG
+    fi
 }
 
 main $@

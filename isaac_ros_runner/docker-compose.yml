@@ -7,7 +7,7 @@ services:
     environment:
       REPO_URL: https://github.com/rbonghi/isaac_ros_tutorial
       RUNNER_NAME: ${GITHUB_ACTIONS_RUNNER_NAME}
-      RUNNER_TOKEN: ${GITHUB_ACTIONS_ACCESS_TOKEN}
+      ACCESS_TOKEN: ${GITHUB_ACTIONS_ACCESS_TOKEN}
       RUNNER_WORKDIR: ${PWD}/github-actions
       RUNNER_SCOPE: 'repo'
       LABELS: linux,gpu,Jetson

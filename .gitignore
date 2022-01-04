@@ -1,1 +1,4 @@
 matrix.json
+.env
+isaac_ros_runner/github-actions/*
+isaac_ros_runner/actions-runner-files/*
