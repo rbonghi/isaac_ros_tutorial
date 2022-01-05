@@ -73,15 +73,17 @@ ENV LD_LIBRARY_PATH="/usr/local/cuda-${CUDA}/targets/aarch64-linux/lib:${LD_LIBR
 ENV LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/tegra-egl:${LD_LIBRARY_PATH}"
 
 # Install pcl_conversions & sensor_msgs_py
-RUN mkdir -p /opt/ros/foxy/src && \
-    cd /opt/ros/foxy/src && \
-    git clone --branch ros2 https://github.com/ros-perception/pcl_msgs.git && \
-    git clone https://github.com/ros-perception/perception_pcl.git && \
-    git clone --branch 2.2.3 https://github.com/ros2/common_interfaces.git && \
-    git clone --branch foxy https://github.com/ros/diagnostics.git && \
-    git clone --branch ros2 https://github.com/ros/xacro.git && \
-    . /opt/ros/$ROS_DISTRO/install/setup.sh && \
-    cd /opt/ros/foxy && \
+ARG ROSINSTALL=isaac_ros_base.rosinstall
+# Copy wstool rosinstall
+COPY ${ROSINSTALL} ${ROSINSTALL}
+
+RUN apt-get update && \
+    apt-get install python3-vcstool python3-pip -y && \
+    mkdir -p ${ROS_ROOT}/src && \
+    vcs import ${ROS_ROOT}/src < ${ROSINSTALL} && \
+    rm -rf /var/lib/apt/lists/*
+RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
+    cd ${ROS_ROOT} && \
     rosdep install -y --ignore-src --from-paths src --rosdistro foxy && \
     colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostic_updater xacro && \
     rm -Rf src logs build
@@ -100,79 +102,13 @@ RUN apt-get update && \
         /usr/bin/g++-8 8 && \
     rm -rf /var/lib/apt/lists/*
 
-################ INSTALL REALSENSE #######################
-
-# Install Realsense
-RUN apt-get update && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE && \
-    add-apt-repository -y "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u && \
-    apt-get install -y rsync librealsense2-utils librealsense2-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install ros2 realsense pkg
-RUN mkdir -p /opt/ros/foxy/src && \
-    cd /opt/ros/foxy/src && \
-    git clone --depth 1 --branch `git ls-remote --tags https://github.com/IntelRealSense/realsense-ros.git | grep -Po "(?<=tags/)3.\d+\.\d+" | sort -V | tail -1` https://github.com/IntelRealSense/realsense-ros.git && \
-    . /opt/ros/$ROS_DISTRO/install/setup.sh && \
-    cd /opt/ros/foxy && \
-    colcon build --merge-install --packages-up-to realsense2_camera realsense2_description && \
-    rm -Rf src logs build
-
-################ BUILD & INSTALL ISAAC ROS packages ####################
-
-# Build Isaac ROS package
-ENV ISAAC_ROS_WS /opt/isaac_ros_ws
-ARG ROSINSTALL=realsense_camera.rosinstall
-# Copy wstool rosinstall
-COPY ${ROSINSTALL} ${ROSINSTALL}
-
-RUN apt-get update && \
-    apt-get install python3-vcstool python3-pip -y && \
-    mkdir -p ${ISAAC_ROS_WS}/src && \
-    vcs import ${ISAAC_ROS_WS}/src < ${ROSINSTALL} && \
-    rm -rf /var/lib/apt/lists/*
-# Pull LFS files
-RUN cd ${ISAAC_ROS_WS}/src/isaac_ros_common && git lfs pull && \
-    cd ${ISAAC_ROS_WS}/src/isaac_ros_image_pipeline && git lfs pull && \
-    cd ${ISAAC_ROS_WS}/src/isaac_ros_visual_odometry && git lfs pull
-
-# Change workdir
-WORKDIR $ISAAC_ROS_WS
-
-# Build Isaac ROS
-RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
-    colcon build --symlink-install \
-    --cmake-args \
-    -DCMAKE_BUILD_TYPE=Release
-
-################ PROJECT PKG ###############################
-
-# Download and build nanosaur_perception
-ENV ROS_WS /opt/ros_ws
-RUN mkdir -p ${ROS_WS}/src
-
-ADD isaac_ros_realsense $ROS_WS/src/isaac_ros_realsense
-
-# Change workdir
-WORKDIR $ROS_WS
-
-# Build Isaac ROS
-RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
-    . $ISAAC_ROS_WS/install/setup.sh && \
-    colcon build --symlink-install \
-    --cmake-args \
-    -DCMAKE_BUILD_TYPE=Release
-
 ################ Final enviroment setup ####################
 
 # source ros package from entrypoint
 RUN sed --in-place --expression \
-      '$isource "$ROS_WS/install/setup.bash"' \
+      '$isource "$ROS_ROOT/install/setup.bash"' \
       /ros_entrypoint.sh
 
 # https://docs.docker.com/engine/reference/builder/#stopsignal
 # https://hynek.me/articles/docker-signals/
 STOPSIGNAL SIGINT
-# run ros package launch file
-CMD ["ros2", "launch", "isaac_ros_realsense", "isaac_ros_realsense.launch.py"]

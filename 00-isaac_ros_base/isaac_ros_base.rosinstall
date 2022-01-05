@@ -1,0 +1,19 @@
+- git:
+    local-name: pcl_msgs
+    version: ros2
+    uri: https://github.com/ros-perception/pcl_msgs.git
+- git:
+    local-name: perception_pcl
+    uri: https://github.com/ros-perception/perception_pcl.git
+- git:
+    local-name: common_interfaces
+    version: 2.2.3
+    uri: https://github.com/ros2/common_interfaces.git
+- git:
+    local-name: diagnostics
+    version: foxy
+    uri: https://github.com/ros/diagnostics.git
+- git:
+    local-name: xacro
+    version: ros2
+    uri: https://github.com/ros/xacro.git
