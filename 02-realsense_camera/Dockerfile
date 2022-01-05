@@ -78,10 +78,12 @@ RUN mkdir -p /opt/ros/foxy/src && \
     git clone --branch ros2 https://github.com/ros-perception/pcl_msgs.git && \
     git clone https://github.com/ros-perception/perception_pcl.git && \
     git clone --branch 2.2.3 https://github.com/ros2/common_interfaces.git && \
+    git clone --branch foxy https://github.com/ros/diagnostics.git && \
+    git clone --branch ros2 https://github.com/ros/xacro.git && \
     . /opt/ros/$ROS_DISTRO/install/setup.sh && \
     cd /opt/ros/foxy && \
     rosdep install -y --ignore-src --from-paths src --rosdistro foxy && \
-    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py && \
+    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostic_updater xacro && \
     rm -Rf src logs build
 
 # Install gcc8 for cross-compiled binaries from Ubuntu 20.04
@@ -107,6 +109,15 @@ RUN apt-get update && \
     add-apt-repository -y "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u && \
     apt-get install -y rsync librealsense2-utils librealsense2-dev && \
     rm -rf /var/lib/apt/lists/*
+
+# Install ros2 realsense pkg
+RUN mkdir -p /opt/ros/foxy/src && \
+    cd /opt/ros/foxy/src && \
+    git clone --depth 1 --branch `git ls-remote --tags https://github.com/IntelRealSense/realsense-ros.git | grep -Po "(?<=tags/)3.\d+\.\d+" | sort -V | tail -1` https://github.com/IntelRealSense/realsense-ros.git && \
+    . /opt/ros/$ROS_DISTRO/install/setup.sh && \
+    cd /opt/ros/foxy && \
+    colcon build --merge-install --packages-up-to realsense2_camera realsense2_description && \
+    rm -Rf src logs build
 
 ################ BUILD & INSTALL ISAAC ROS packages ####################
 

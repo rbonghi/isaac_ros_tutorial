@@ -3,7 +3,7 @@
 # Build
 
 ```
-bash script/build_docker.sh 02-realsense_camera
+bash scripts/build_docker.sh 02-realsense_camera
 ```
 
 
