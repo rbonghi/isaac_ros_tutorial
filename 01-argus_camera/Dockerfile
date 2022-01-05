@@ -29,6 +29,29 @@ ARG L4T=r32.6
 # Disable terminal interaction for apt
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install OpenCV dependencies
+RUN apt-get update && apt-get install -y \
+    libavformat-dev \
+    libjpeg-dev \
+    libopenjp2-7-dev \
+    libpng-dev \
+    libpq-dev \
+    libswscale-dev \
+    libtbb2 \
+    libtbb-dev \
+    libtiff-dev \
+    pkg-config \
+    yasm && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install additional packages needed for ROS2 dependencies
+RUN apt-get update && apt-get install -y \
+    python3-distutils \
+    libboost-all-dev \
+    libboost-dev \
+    libpcl-dev && \
+    rm -rf /var/lib/apt/lists/*
+
 # Install Git-LFS and other packages
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
     apt-get update && apt-get install -y git-lfs software-properties-common && \
@@ -48,6 +71,18 @@ ENV LD_LIBRARY_PATH="/opt/nvidia/vpi1/lib64:${LD_LIBRARY_PATH}"
 ENV LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/tegra:${LD_LIBRARY_PATH}"
 ENV LD_LIBRARY_PATH="/usr/local/cuda-${CUDA}/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}"
 ENV LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/tegra-egl:${LD_LIBRARY_PATH}"
+
+# Install pcl_conversions & sensor_msgs_py
+RUN mkdir -p /opt/ros/foxy/src && \
+    cd /opt/ros/foxy/src && \
+    git clone --branch ros2 https://github.com/ros-perception/pcl_msgs.git && \
+    git clone https://github.com/ros-perception/perception_pcl.git && \
+    git clone --branch 2.2.3 https://github.com/ros2/common_interfaces.git && \
+    . /opt/ros/$ROS_DISTRO/install/setup.sh && \
+    cd /opt/ros/foxy && \
+    rosdep install -y --ignore-src --from-paths src --rosdistro foxy && \
+    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py && \
+    rm -Rf src logs build
 
 # Install gcc8 for cross-compiled binaries from Ubuntu 20.04
 RUN apt-get update && \
