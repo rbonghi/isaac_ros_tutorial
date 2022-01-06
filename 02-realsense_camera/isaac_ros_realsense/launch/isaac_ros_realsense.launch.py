@@ -41,8 +41,9 @@ def generate_launch_description():
                 'infra_width': 640,
                 'enable_color': False,
                 'enable_depth': False,
-                'emitter_enabled': False,
-                'infra_fps': 90.0
+                'stereo_module.emitter_enabled': 2,
+                'infra_fps': 90.0,
+                'unite_imu_method': 'linear_interpolation' # copy | linear_interpolation
         }],
         )
 
@@ -52,21 +53,24 @@ def generate_launch_description():
         namespace='camera',
         plugin='isaac_ros::visual_odometry::VisualOdometryNode',
         parameters=[{
-                    'enable_rectified_pose': True,
-                    'denoise_input_images': True,
+                    'enable_rectified_pose': False,
+                    'denoise_input_images': False,
                     'rectified_images': True,
                     'enable_debug_mode': False,
+                    'enable_imu': True,
                     'debug_dump_path': '/tmp/elbrus',
                     'left_camera_frame': 'camera_infra1_frame',
                     'right_camera_frame': 'camera_infra2_frame',
                     'fixed_frame': 'odom',
+                    'imu_frame': 'camera_imu_optical_frame',
                     'current_smooth_frame': 'base_link',
                     'current_rectified_frame': 'base_link_rect'
                     }],
         remappings=[('stereo_camera/left/image', 'infra1/image_rect_raw'),
                     ('stereo_camera/left/camera_info', 'infra1/camera_info'),
                     ('stereo_camera/right/image', 'infra2/image_rect_raw'),
-                    ('stereo_camera/right/camera_info', 'infra2/camera_info')]
+                    ('stereo_camera/right/camera_info', 'infra2/camera_info'),
+                    ('visual_odometry/imu', 'imu')]
     )
 
     visual_odometry_launch_container = ComposableNodeContainer(
