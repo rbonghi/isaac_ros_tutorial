@@ -25,6 +25,8 @@ FROM ${BASE_IMAGE}
 ARG ZED_SDK_MAJOR=3
 ARG ZED_SDK_MINOR=6
 
+################ INSTALL ZED Camera drivers #################################
+
 #This environment variable is needed to use the streaming features on Jetson inside a container
 ENV LOGNAME root
 RUN apt-get update -y && \
@@ -39,6 +41,42 @@ RUN apt-get update -y && \
 #This symbolic link is needed to use the streaming features on Jetson inside a container
 RUN ln -sf /usr/lib/aarch64-linux-gnu/tegra/libv4l2.so.0 /usr/lib/aarch64-linux-gnu/libv4l2.so
 
+# Download and build zed ROS2
+ENV ROS_WS /opt/ros_ws
+RUN mkdir -p ${ROS_WS}/src && \
+    cd ${ROS_WS}/src && \
+    git clone  --recursive https://github.com/stereolabs/zed-ros2-wrapper.git && \
+    . /opt/ros/$ROS_DISTRO/install/setup.sh && \
+    colcon build --symlink-install \
+    --cmake-args \
+    -DCMAKE_BUILD_TYPE=Release
+
+################ BUILD & INSTALL ISAAC ROS packages ####################
+
+# Build Isaac ROS package
+ENV ISAAC_ROS_WS /opt/isaac_ros_ws
+ARG ROSINSTALL=zed_camera.rosinstall
+# Copy wstool rosinstall
+COPY ${ROSINSTALL} ${ROSINSTALL}
+
+RUN apt-get update && \
+    apt-get install python3-vcstool python3-pip -y && \
+    mkdir -p ${ISAAC_ROS_WS}/src && \
+    vcs import ${ISAAC_ROS_WS}/src < ${ROSINSTALL} && \
+    rm -rf /var/lib/apt/lists/*
+# Pull LFS files
+RUN cd ${ISAAC_ROS_WS}/src/isaac_ros_common && git lfs pull && \
+    cd ${ISAAC_ROS_WS}/src/isaac_ros_image_pipeline && git lfs pull && \
+    cd ${ISAAC_ROS_WS}/src/isaac_ros_visual_odometry && git lfs pull
+
+# Change workdir
+WORKDIR $ISAAC_ROS_WS
+
+# Build Isaac ROS
+RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
+    colcon build --symlink-install \
+    --cmake-args \
+    -DCMAKE_BUILD_TYPE=Release
 
 ################ Final enviroment setup ####################
 

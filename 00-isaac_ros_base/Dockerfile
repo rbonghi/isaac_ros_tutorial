@@ -89,7 +89,7 @@ RUN apt-get update && \
 RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
     cd ${ROS_ROOT} && \
     rosdep install -y --ignore-src --from-paths src --rosdistro foxy && \
-    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostic_updater xacro && \
+    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostics xacro && \
     rm -Rf src logs build
 
 # Install gcc8 for cross-compiled binaries from Ubuntu 20.04

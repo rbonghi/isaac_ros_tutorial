@@ -41,7 +41,7 @@ def generate_launch_description():
                 'infra_width': 640,
                 'enable_color': False,
                 'enable_depth': False,
-                'stereo_module.emitter_enabled': 2,
+                'stereo_module.emitter_enabled': 2, #https://github.com/IntelRealSense/realsense-ros/issues/817
                 'infra_fps': 90.0,
                 'unite_imu_method': 'linear_interpolation' # copy | linear_interpolation
         }],
