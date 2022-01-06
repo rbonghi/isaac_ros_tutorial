@@ -164,6 +164,9 @@ RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
     --cmake-args \
     -DCMAKE_BUILD_TYPE=Release
 
+# Restore using the default Foxy DDS middleware: FastRTPS
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
 ################ Final enviroment setup ####################
 
 # source ros package from entrypoint

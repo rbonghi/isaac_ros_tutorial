@@ -104,6 +104,9 @@ RUN apt-get update && \
 
 ################ Final enviroment setup ####################
 
+# Restore using the default Foxy DDS middleware: FastRTPS
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+
 # source ros package from entrypoint
 RUN sed --in-place --expression \
       '$isource "$ROS_ROOT/install/setup.bash"' \
