@@ -45,9 +45,8 @@ jobs:
         TERM=xterm bash scripts/build_docker.sh 00-isaac_ros_base -ci
 
   isaac-ros-tutorial:
-    needs: matrix-builder
+    needs: [matrix-builder, isaac-ros-base]
     runs-on: self-hosted
-    needs: [isaac-ros-base]
     strategy:
       matrix: ${{fromJson(needs.matrix-builder.outputs.matrix)}} #variable: project
     steps:
