@@ -18,13 +18,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-# Jetpack 4.6
-# Docker file for aarch64 based Jetson device
-ARG BASE_IMAGE="dustynv/ros:foxy-ros-base-l4t-r32.6.1"
+# Start from Isaac ROS base
+ARG BASE_IMAGE="rbonghi/isaac-ros-tutorial:isaac-ros-base"
 FROM ${BASE_IMAGE}
-# Configuration CUDA
-ARG CUDA=10.2
-ARG L4T=r32.6
 
 ################ Final enviroment setup ####################
 

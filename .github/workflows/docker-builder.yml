@@ -2,6 +2,11 @@ name: build
 
 on: [push, workflow_dispatch]
 
+# https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#concurrency
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   matrix-builder:
     runs-on: ubuntu-latest
@@ -16,9 +21,33 @@ jobs:
         TERM=xterm bash .github/ci_builder.sh
         echo "::set-output name=matrix::$(cat matrix.json)"
 
+  isaac-ros-base:
+    needs: matrix-builder
+    runs-on: self-hosted
+    steps:
+    - name: Extract tag name
+      id: extract_tag
+      shell: bash
+      run: |
+        if ${{ startsWith(github.ref, 'refs/tags/') }} ; then
+          echo ::set-output name=tag::${GITHUB_REF/refs\/tags\//}
+        else
+          echo ::set-output name=tag::${GITHUB_REF/refs\/heads\//}
+        fi
+    - name: Checkout code
+      uses: actions/checkout@v2.4.0
+    - name: Docker info
+      shell: bash
+      run: docker info
+    - name: "Build docker 00-isaac_ros_base"
+      run: |
+        echo "run 00-isaac_ros_base"
+        TERM=xterm bash scripts/build_docker.sh 00-isaac_ros_base -ci
+
   isaac-ros-tutorial:
     needs: matrix-builder
     runs-on: self-hosted
+    needs: [isaac-ros-base]
     strategy:
       matrix: ${{fromJson(needs.matrix-builder.outputs.matrix)}} #variable: project
     steps:

@@ -28,6 +28,7 @@ reset=`tput sgr0`
 
 main()
 {
+    local start_from=1
     local local_folder=$(pwd)
     local json_file="matrix.json"
     # Build a list of folder available
@@ -36,7 +37,7 @@ main()
     for d in $local_folder/*/
     do
         # Exlude scripts folder
-        if [[ $d =~ [0-9] ]] ; then
+        if [[ $d =~ [$start_from-9] ]] ; then
             dirs[i++]="${d%/}"
         fi
     done

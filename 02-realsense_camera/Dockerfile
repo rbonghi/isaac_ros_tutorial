@@ -18,87 +18,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-# Jetpack 4.6
-# Docker file for aarch64 based Jetson device
-ARG BASE_IMAGE="dustynv/ros:foxy-ros-base-l4t-r32.6.1"
+# Start from Isaac ROS base
+ARG BASE_IMAGE="rbonghi/isaac-ros-tutorial:isaac-ros-base"
 FROM ${BASE_IMAGE}
-# Configuration CUDA
-ARG CUDA=10.2
-ARG L4T=r32.6
-
-# Disable terminal interaction for apt
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install OpenCV dependencies
-RUN apt-get update && apt-get install -y \
-    libavformat-dev \
-    libjpeg-dev \
-    libopenjp2-7-dev \
-    libpng-dev \
-    libpq-dev \
-    libswscale-dev \
-    libtbb2 \
-    libtbb-dev \
-    libtiff-dev \
-    pkg-config \
-    yasm && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install additional packages needed for ROS2 dependencies
-RUN apt-get update && apt-get install -y \
-    python3-distutils \
-    libboost-all-dev \
-    libboost-dev \
-    libpcl-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install Git-LFS and other packages
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
-    apt-get update && apt-get install -y git-lfs software-properties-common && \
-    rm -rf /var/lib/apt/lists/*
-
-# Fix cuda info
-ARG DPKG_STATUS
-# Add nvidia repo/public key and install VPI libraries
-RUN echo "$DPKG_STATUS" >> /var/lib/dpkg/status && \
-    curl https://repo.download.nvidia.com/jetson/jetson-ota-public.asc > /etc/apt/trusted.gpg.d/jetson-ota-public.asc && \
-    echo "deb https://repo.download.nvidia.com/jetson/common ${L4T} main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
-    apt-get update && apt-get install -y libnvvpi1 vpi1-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# Update environment
-ENV LD_LIBRARY_PATH="/opt/nvidia/vpi1/lib64:${LD_LIBRARY_PATH}"
-ENV LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/tegra:${LD_LIBRARY_PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/cuda-${CUDA}/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}"
-ENV LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/tegra-egl:${LD_LIBRARY_PATH}"
-
-# Install pcl_conversions & sensor_msgs_py
-RUN mkdir -p /opt/ros/foxy/src && \
-    cd /opt/ros/foxy/src && \
-    git clone --branch ros2 https://github.com/ros-perception/pcl_msgs.git && \
-    git clone https://github.com/ros-perception/perception_pcl.git && \
-    git clone --branch 2.2.3 https://github.com/ros2/common_interfaces.git && \
-    git clone --branch foxy https://github.com/ros/diagnostics.git && \
-    git clone --branch ros2 https://github.com/ros/xacro.git && \
-    . /opt/ros/$ROS_DISTRO/install/setup.sh && \
-    cd /opt/ros/foxy && \
-    rosdep install -y --ignore-src --from-paths src --rosdistro foxy && \
-    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostic_updater xacro && \
-    rm -Rf src logs build
-
-# Install gcc8 for cross-compiled binaries from Ubuntu 20.04
-RUN apt-get update && \
-    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
-    apt-get install -y gcc-8 g++-8 libstdc++6 && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8 && \
-    rm -rf /usr/bin/aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-g++ \
-        /usr/bin/aarch64-linux-gnu-g++-7 /usr/bin/aarch64-linux-gnu-gcc-7 && \
-    update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc \
-        /usr/bin/gcc-8 8 && \
-    update-alternatives --install /usr/bin/aarch64-linux-gnu-g++ aarch64-linux-gnu-g++ \
-        /usr/bin/g++-8 8 && \
-    rm -rf /var/lib/apt/lists/*
 
 ################ INSTALL REALSENSE #######################
 
