@@ -22,12 +22,13 @@
 # Docker file for aarch64 based Jetson device
 ARG BASE_IMAGE="dustynv/ros:foxy-ros-base-l4t-r32.6.1"
 FROM ${BASE_IMAGE}
+# Enviroment variables
+ENV L4T_MINOR_VERSION=6
+ENV JETPACK_MAJOR=4
+ENV JETPACK_MINOR=6
 # Configuration CUDA
 ARG CUDA=10.2
-ARG L4T_MINOR_VERSION=6
 ARG L4T=r32.${L4T_MINOR_VERSION}
-ARG JETPACK_MAJOR=4
-ARG JETPACK_MINOR=6
 
 # Disable terminal interaction for apt
 ENV DEBIAN_FRONTEND=noninteractive
