@@ -22,7 +22,6 @@ jobs:
         echo "::set-output name=matrix::$(cat matrix.json)"
 
   isaac-ros-base:
-    needs: matrix-builder
     runs-on: self-hosted
     steps:
     - name: Extract tag name
