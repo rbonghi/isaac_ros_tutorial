@@ -21,9 +21,9 @@ DEALINGS IN THE SOFTWARE
 -->
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-    <name>isaac_ros_realsense</name>
+    <name>isaac_ros_zed</name>
     <version>0.1.0</version>
-    <description>NVIDIA Isaac ROS demo launcer for Intel Realsense d435i</description>
+    <description>NVIDIA Isaac ROS demo launcer for ZED camera</description>
 
     <author email="rbonghi@nvidia.com">Raffaello Bonghi</author>
     <maintainer email="rbonghi@nvidia.com">Raffaello Bonghi</maintainer>
