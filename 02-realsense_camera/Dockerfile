@@ -70,7 +70,7 @@ RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
 
 ################ PROJECT PKG ###############################
 
-# Download and build nanosaur_perception
+# Download and build ros workspace
 ENV ROS_WS /opt/ros_ws
 RUN mkdir -p ${ROS_WS}/src
 
@@ -85,9 +85,6 @@ RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
     colcon build --symlink-install \
     --cmake-args \
     -DCMAKE_BUILD_TYPE=Release
-
-# Restore using the default Foxy DDS middleware: FastRTPS
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 ################ Final enviroment setup ####################
 
