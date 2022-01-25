@@ -93,8 +93,5 @@ RUN sed --in-place --expression \
       '$isource "$ROS_WS/install/setup.bash"' \
       /ros_entrypoint.sh
 
-# https://docs.docker.com/engine/reference/builder/#stopsignal
-# https://hynek.me/articles/docker-signals/
-STOPSIGNAL SIGINT
 # run ros package launch file
 CMD ["ros2", "launch", "isaac_ros_realsense", "isaac_ros_realsense.launch.py"]

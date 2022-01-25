@@ -17,3 +17,7 @@
     local-name: xacro
     version: ros2
     uri: https://github.com/ros/xacro.git
+- git:
+    local-name: image_common
+    version: 3.0.0
+    uri: https://github.com/ros-perception/image_common.git

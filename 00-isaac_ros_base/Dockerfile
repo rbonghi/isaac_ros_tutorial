@@ -81,6 +81,8 @@ ARG ROSINSTALL=isaac_ros_base.rosinstall
 # Copy wstool rosinstall
 COPY ${ROSINSTALL} ${ROSINSTALL}
 
+# Fix image transport to v3.0.0
+# https://github.com/stereolabs/zed-ros2-wrapper/issues/66
 RUN apt-get update && \
     apt-get install python3-vcstool python3-pip -y && \
     mkdir -p ${ROS_ROOT}/src && \
@@ -89,7 +91,8 @@ RUN apt-get update && \
 RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
     cd ${ROS_ROOT} && \
     rosdep install -y --ignore-src --from-paths src --rosdistro foxy && \
-    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostic_updater xacro && \
+    colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostic_updater xacro \
+    camera_calibration_parsers image_transport image_common camera_info_manager && \
     rm -Rf src logs build
 
 # Install gcc8 for cross-compiled binaries from Ubuntu 20.04

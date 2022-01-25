@@ -100,6 +100,21 @@ def generate_launch_description():
         name='visual_odometry_node',
         package='isaac_ros_visual_odometry',
         plugin='isaac_ros::visual_odometry::VisualOdometryNode',
+        namespace='camera',
+        parameters=[{
+                    'enable_rectified_pose': False,
+                    'denoise_input_images': False,
+                    'rectified_images': True,
+                    'enable_debug_mode': False,
+                    'enable_imu': True,
+                    'debug_dump_path': '/tmp/elbrus',
+                    'left_camera_frame': f"{camera_name}_left_camera_frame",
+                    'right_camera_frame': f"{camera_name}_right_camera_frame",
+                    'imu_frame': f"{camera_name}_imu_link",
+                    'fixed_frame': 'odom',
+                    'current_smooth_frame': 'base_link',
+                    'current_rectified_frame': 'base_link_rectified'
+                    }],
         remappings=[('stereo_camera/left/camera_info',
                      f"/{camera_name}/zed_node/left/camera_info"),
                     ('stereo_camera/right/camera_info',
@@ -110,25 +125,11 @@ def generate_launch_description():
                      f"/{camera_name}/zed_node/right/image_rect_gray"),
                     ('visual_odometry/imu',
                      f"/{camera_name}/zed_node/imu/data")],
-        parameters=[{
-                    'enable_rectified_pose': True,
-                    'denoise_input_images': False,
-                    'rectified_images': True,
-                    'enable_debug_mode': False,
-                    'enable_imu': True,
-                    'debug_dump_path': '/tmp/elbrus',
-                    'left_camera_frame': f"{camera_name}_left_camera_frame",
-                    'right_camera_frame': f"{camera_name}_right_camera_frame",
-                    'imu_frame': f"{camera_name}_imu_link",
-                    'fixed_frame': 'odom',
-                    'current_smooth_frame': 'base_link_smooth',
-                    'current_rectified_frame': 'base_link_rectified'
-                    }]
     )
 
     visual_odometry_launch_container = ComposableNodeContainer(
         name='visual_odometry_launch_container',
-        namespace='',
+        namespace='camera',
         package='rclcpp_components',
         executable='component_container',
         composable_node_descriptions=[

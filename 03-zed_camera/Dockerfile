@@ -103,3 +103,6 @@ RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
 RUN sed --in-place --expression \
       '$isource "$ROS_WS/install/setup.bash"' \
       /ros_entrypoint.sh
+
+# run ros package launch file
+CMD ["ros2", "launch", "isaac_ros_zed", "isaac_ros_zed.launch.py"]
