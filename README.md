@@ -7,7 +7,6 @@ A set of tutorial to define and setup your docker for each package
 * [01-argus_camera](01-argus_camera/README.md)
 * [02-realsense_camera](02-realsense_camera/README.md)
 * [03-zed_camera](03-zed_camera/README.md)
-* [04-dnn_inference](04-dnn_inference/README.md)
 
 ## Test your docker
 
