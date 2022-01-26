@@ -9,7 +9,7 @@ To build Isaac ROS on your board, you need to add a special attribute on the doc
 **Please note:** This script will **restart** the docker service.
 
 ```
-bash script/fix_jetson_docker.sh
+bash scripts/fix_jetson_docker.sh
 ```
 
 ## Build and push docker
@@ -17,7 +17,7 @@ bash script/fix_jetson_docker.sh
 If you want build one of the tutorial in this page, please run:
 
 ```
-bash script/build_docker.sh <FOLDER_NAME>
+bash scripts/build_docker.sh <FOLDER_NAME>
 ```
 
 You need to select which folder you want build.

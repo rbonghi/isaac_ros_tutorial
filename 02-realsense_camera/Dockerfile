@@ -49,11 +49,8 @@ ARG ROSINSTALL=realsense_camera.rosinstall
 # Copy wstool rosinstall
 COPY ${ROSINSTALL} ${ROSINSTALL}
 
-RUN apt-get update && \
-    apt-get install python3-vcstool python3-pip -y && \
-    mkdir -p ${ISAAC_ROS_WS}/src && \
-    vcs import ${ISAAC_ROS_WS}/src < ${ROSINSTALL} && \
-    rm -rf /var/lib/apt/lists/*
+RUN mkdir -p ${ISAAC_ROS_WS}/src && \
+    vcs import ${ISAAC_ROS_WS}/src < ${ROSINSTALL}
 # Pull LFS files
 RUN cd ${ISAAC_ROS_WS}/src/isaac_ros_common && git lfs pull && \
     cd ${ISAAC_ROS_WS}/src/isaac_ros_image_pipeline && git lfs pull && \
