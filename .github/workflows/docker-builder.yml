@@ -52,13 +52,13 @@ jobs:
       id: docker_push
       run: |
         BRANCH_NAME=${{ steps.extract_tag.outputs.tag }}
-        TERM=xterm bash nanosaur_perception/scripts/docker_builder.sh --push --branch $BRANCH_NAME
+        TERM=xterm bash scripts/build_docker.sh 00-isaac_ros_base --push --branch $BRANCH_NAME
     - name: Push Latest Docker
       if: startsWith(github.ref, 'refs/tags/')
       shell: bash
       run: |
         BRANCH_NAME=${{ steps.extract_tag.outputs.tag }}
-        TERM=xterm bash nanosaur_perception/scripts/docker_builder.sh --push --branch $BRANCH_NAME --latest
+        TERM=xterm bash scripts/build_docker.sh 00-isaac_ros_base --push --branch $BRANCH_NAME --latest
 
   isaac-ros-tutorial:
     needs: [matrix-builder, isaac-ros-base]
@@ -94,13 +94,13 @@ jobs:
       id: docker_push
       run: |
         BRANCH_NAME=${{ steps.extract_tag.outputs.tag }}
-        TERM=xterm bash nanosaur_perception/scripts/docker_builder.sh --push --branch $BRANCH_NAME
+        TERM=xterm bash scripts/build_docker.sh ${{ matrix.project }} --push --branch $BRANCH_NAME
     - name: Push Latest Docker
       if: startsWith(github.ref, 'refs/tags/')
       shell: bash
       run: |
         BRANCH_NAME=${{ steps.extract_tag.outputs.tag }}
-        TERM=xterm bash nanosaur_perception/scripts/docker_builder.sh --push --branch $BRANCH_NAME --latest
+        TERM=xterm bash scripts/build_docker.sh ${{ matrix.project }} --push --branch $BRANCH_NAME --latest
 
   make_release:
     name: Upload release
