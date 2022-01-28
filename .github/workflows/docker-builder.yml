@@ -24,6 +24,11 @@ jobs:
   isaac-ros-base:
     runs-on: self-hosted
     steps:
+    - name: Login to DockerHub
+      uses: docker/login-action@v1.10.0 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Extract tag name
       id: extract_tag
       shell: bash
@@ -42,11 +47,6 @@ jobs:
       run: |
         echo "run 00-isaac_ros_base"
         TERM=xterm bash scripts/build_docker.sh 00-isaac_ros_base -ci --pull-base-image
-    - name: Login to DockerHub
-      uses: docker/login-action@v1.10.0 
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Push Docker
       shell: bash
       id: docker_push
