@@ -41,7 +41,7 @@ jobs:
     - name: "Build docker 00-isaac_ros_base"
       run: |
         echo "run 00-isaac_ros_base"
-        TERM=xterm bash scripts/build_docker.sh 00-isaac_ros_base -ci --pull-base-image
+        TERM=xterm bash scripts/build_docker.sh 00-isaac_ros_base -ci
     - name: Login to DockerHub
       uses: docker/login-action@v1.10.0 
       with:

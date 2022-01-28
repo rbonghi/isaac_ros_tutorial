@@ -48,7 +48,7 @@ usage()
     echo "  --push                  |  Push docker. Need to be logged in " >&2
     echo "  --latest                |  Tag and push latest release" >&2
     echo "  --repo REPO_NAME        |  Set repository to push " >&2
-    echo "  --pull-base-image       |  Pull the base image " >&2
+    echo "  --no-pull-base-image    |  Pull the base image " >&2
     echo "  --branch BRANCH_DISTRO  |  Set tag from branch " >&2
     echo "  --base-image BASE_IMAGE |  Change base image to build. Default=${bold}$BASE_IMAGE_DEFAULT${reset}" >&2
 }
@@ -68,7 +68,7 @@ main()
     local PUSH=false
     local VERBOSE=false
     local CI_BUILD=false
-    local PULL_IMAGE=false
+    local PULL_IMAGE=true
     local BRANCH_DISTRO=""
     local LATEST=false
     # Base image
@@ -98,8 +98,8 @@ main()
                 LATEST=true
                 shift 1
             ;;
-            --pull-base-image)
-                PULL_IMAGE=true
+            --no-pull-base-image)
+                PULL_IMAGE=false
             ;;
             --push)
                 PUSH=true
