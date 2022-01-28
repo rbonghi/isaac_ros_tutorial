@@ -46,8 +46,10 @@ usage()
     echo "  -v                      |  Verbose. Schow extra info " >&2
     echo "  -ci                     |  Build docker without cache " >&2
     echo "  --push                  |  Push docker. Need to be logged in " >&2
+    echo "  --latest                |  Tag and push latest release" >&2
     echo "  --repo REPO_NAME        |  Set repository to push " >&2
     echo "  --pull-base-image       |  Pull the base image " >&2
+    echo "  --branch BRANCH_DISTRO  |  Set tag from branch " >&2
     echo "  --base-image BASE_IMAGE |  Change base image to build. Default=${bold}$BASE_IMAGE_DEFAULT${reset}" >&2
 }
 
@@ -67,6 +69,8 @@ main()
     local VERBOSE=false
     local CI_BUILD=false
     local PULL_IMAGE=false
+    local BRANCH_DISTRO=""
+    local LATEST=false
     # Base image
     local BASE_IMAGE=""
     # Decode all information from startup
@@ -84,6 +88,14 @@ main()
             ;;
             --repo)
                 REPO_NAME=$3
+                shift 1
+            ;;
+            --branch)
+                BRANCH_DISTRO=$2
+                shift 1
+            ;;
+            --latest)
+                LATEST=true
                 shift 1
             ;;
             --pull-base-image)
@@ -108,10 +120,10 @@ main()
         echo "${red}Please write one of the tutorial folder you want build${reset}"
         exit 33
     fi
-
+    
     # replace all blanks
     REPO_NAME=${REPO_NAME//_/-}
-
+    
     # Extract tag name
     local TAG=${FOLDER#*-}
     # Strip "/"
@@ -133,7 +145,7 @@ main()
             # https://newbedev.com/what-s-the-purpose-of-docker-build-pull
             CI_OPTIONS="--no-cache"
         fi
-
+        
         local PULL_OPTION=""
         if $PULL_IMAGE ; then
             PULL_OPTION="--pull"
