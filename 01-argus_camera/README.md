@@ -9,7 +9,7 @@ This demo start your MIPI camera and rectify the image, the output is in `/image
 # Build
 
 ```
-bash script/build_docker.sh 01-argus_camera
+bash scripts/build_docker.sh 01-argus_camera
 ```
 
 # Run docker
