@@ -21,6 +21,7 @@
 
 main()
 {
+    SCRIPTS_DIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
     local PLATFORM="$(uname -m)"
     # Check if is running on NVIDIA Jetson platform
     if [[ $PLATFORM != "aarch64" ]]; then
@@ -28,25 +29,27 @@ main()
         exit 33
     fi
 
-    read -p "Do you wish to fix docker to works with isaac-ros? [Y/n] " yn
-        case $yn in
-            [Yy]* ) # Break and install jetson_stats 
-                    break;;
-            [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
-    esac
+    while :; do
+        read -p "Do you wish to fix docker to works with isaac-ros? [Y/n] " yn
+            case $yn in
+                [Yy]* ) # Break and install jetson_stats
+                        break;;
+                [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
 
     # Make sure the nvidia docker runtime will be used for builds
     DEFAULT_RUNTIME=$(docker info | grep "Default Runtime: nvidia" ; true)
     if [[ -z "$DEFAULT_RUNTIME" ]]; then
         echo "${yellow} - Set runtime nvidia on /etc/docker/daemon.json${reset}"
         sudo mv /etc/docker/daemon.json /etc/docker/daemon.json.bkp
-        sudo cp docker-config/daemon.json /etc/docker/daemon.json
+        sudo cp ${SCRIPTS_DIR}/docker-config/daemon.json /etc/docker/daemon.json
     fi
 
     local PATH_HOST_FILES4CONTAINER="/etc/nvidia-container-runtime/host-files-for-container.d"
     echo "${green} - Enable dockers to build jetson_multimedia api folder${reset}"
-    sudo cp docker-config/jetson_multimedia_api.csv $PATH_HOST_FILES4CONTAINER/jetson_multimedia_api.csv
+    sudo cp ${SCRIPTS_DIR}/docker-config/jetson_multimedia_api.csv $PATH_HOST_FILES4CONTAINER/jetson_multimedia_api.csv
 
     echo "${yellow} - Restart docker server${reset}"
     sudo systemctl restart docker.service
