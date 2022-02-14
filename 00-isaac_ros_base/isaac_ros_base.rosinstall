@@ -21,3 +21,35 @@
     local-name: image_common
     version: 3.0.0
     uri: https://github.com/ros-perception/image_common.git
+- git:
+    local-name: image_pipeline/image_publisher
+    uri: https://github.com/ros2-gbp/image_pipeline-release.git
+    version: release/foxy/image_publisher/2.2.1-1
+- git:
+    local-name: image_pipeline/depth_image_proc
+    uri: https://github.com/ros2-gbp/image_pipeline-release.git
+    version: release/foxy/depth_image_proc/2.2.1-1
+- git:
+    local-name: image_pipeline/image_proc
+    uri: https://github.com/ros2-gbp/image_pipeline-release.git
+    version: release/foxy/image_proc/2.2.1-1
+- git:
+    local-name: image_pipeline/image_view
+    uri: https://github.com/ros2-gbp/image_pipeline-release.git
+    version: release/foxy/image_view/2.2.1-1
+- git:
+    local-name: image_pipeline/image_rotate
+    uri: https://github.com/ros2-gbp/image_pipeline-release.git
+    version: release/foxy/image_rotate/2.2.1-1
+- git:
+    local-name: image_pipeline/stereo_image_proc
+    uri: https://github.com/ros2-gbp/image_pipeline-release.git
+    version: release/foxy/stereo_image_proc/2.2.1-1
+- git:
+    local-name: image_transport_plugins/compressed_image_transport
+    uri: https://github.com/ros2-gbp/image_transport_plugins-release.git
+    version: release/foxy/compressed_image_transport/2.3.1-1
+- git:
+    local-name: image_transport_plugins/compressed_depth_image_transport
+    uri: https://github.com/ros2-gbp/image_transport_plugins-release.git
+    version: release/foxy/compressed_depth_image_transport/2.3.1-1
