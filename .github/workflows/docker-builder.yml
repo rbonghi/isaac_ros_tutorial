@@ -14,7 +14,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2.4.0
+      uses: actions/checkout@v3
     - name: Extract matrix
       id: set-matrix
       run: |
@@ -34,7 +34,7 @@ jobs:
           echo ::set-output name=tag::${GITHUB_REF/refs\/heads\//}
         fi
     - name: Checkout code
-      uses: actions/checkout@v2.4.0
+      uses: actions/checkout@v3
     - name: Docker info
       shell: bash
       run: docker info
@@ -76,7 +76,7 @@ jobs:
           echo ::set-output name=tag::${GITHUB_REF/refs\/heads\//}
         fi
     - name: Checkout code
-      uses: actions/checkout@v2.4.0
+      uses: actions/checkout@v3
     - name: Docker info
       shell: bash
       run: docker info
