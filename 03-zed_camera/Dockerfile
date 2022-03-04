@@ -23,7 +23,7 @@ ARG BASE_IMAGE="rbonghi/isaac-ros-tutorial:isaac-ros-base"
 FROM ${BASE_IMAGE}
 # ZED version
 ARG ZED_SDK_MAJOR=3
-ARG ZED_SDK_MINOR=6
+ARG ZED_SDK_MINOR=7
 
 ################ INSTALL ZED Camera drivers #################################
 
