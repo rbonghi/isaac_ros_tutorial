@@ -18,17 +18,14 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-# Jetpack 4.6
+# Jetpack 4.6.1
 # Docker file for aarch64 based Jetson device
-ARG BASE_IMAGE="dustynv/ros:foxy-ros-base-l4t-r32.6.1"
-FROM ${BASE_IMAGE}
-# Enviroment variables
-ENV L4T_MINOR_VERSION=6
-ENV JETPACK_MAJOR=4
-ENV JETPACK_MINOR=6
+FROM dustynv/ros:foxy-ros-base-l4t-r32.7.1
+# L4T variables
+ENV L4T=32.7
+ENV L4T_MINOR_VERSION=7.1
 # Configuration CUDA
-ARG CUDA=10.2
-ARG L4T=r32.${L4T_MINOR_VERSION}
+ENV CUDA=10.2
 
 # Disable terminal interaction for apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -53,12 +50,25 @@ RUN apt-get update && apt-get install -y \
     python3-distutils \
     libboost-all-dev \
     libboost-dev \
-    libpcl-dev && \
+    libpcl-dev \
+    libode-dev \
+    lcov \
+    python3-zmq \
+    libxaw7-dev \
+    libgraphicsmagick++1-dev \
+    graphicsmagick-libmagick-dev-compat \
+    libceres-dev \
+    libsuitesparse-dev \
+    libncurses5-dev \
+    libassimp-dev \
+    libyaml-cpp-dev \
+    libpcap-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Git-LFS and other packages
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
-    apt-get update && apt-get install -y git-lfs software-properties-common && \
+RUN apt-get update && apt-get install -y \
+    git-lfs \
+    software-properties-common && \
     rm -rf /var/lib/apt/lists/*
 
 # Fix cuda info
@@ -66,7 +76,7 @@ ARG DPKG_STATUS
 # Add nvidia repo/public key and install VPI libraries
 RUN echo "$DPKG_STATUS" >> /var/lib/dpkg/status && \
     curl https://repo.download.nvidia.com/jetson/jetson-ota-public.asc > /etc/apt/trusted.gpg.d/jetson-ota-public.asc && \
-    echo "deb https://repo.download.nvidia.com/jetson/common ${L4T} main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
+    echo "deb https://repo.download.nvidia.com/jetson/common r${L4T} main" >> /etc/apt/sources.list.d/nvidia-l4t-apt-source.list && \
     apt-get update && apt-get install -y libnvvpi1 vpi1-dev && \
     rm -rf /var/lib/apt/lists/*
 
