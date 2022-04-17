@@ -54,7 +54,7 @@ RUN mkdir -p ${ISAAC_ROS_WS}/src && \
 # Pull LFS files
 RUN cd ${ISAAC_ROS_WS}/src/isaac_ros_common && git lfs pull && \
     cd ${ISAAC_ROS_WS}/src/isaac_ros_image_pipeline && git lfs pull && \
-    cd ${ISAAC_ROS_WS}/src/isaac_ros_visual_odometry && git lfs pull
+    cd ${ISAAC_ROS_WS}/src/isaac_ros_visual_slam && git lfs pull
 
 # Change workdir
 WORKDIR $ISAAC_ROS_WS

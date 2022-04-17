@@ -58,40 +58,43 @@ def generate_launch_description():
                 'unite_imu_method': 'linear_interpolation' # copy | linear_interpolation
         }],
         )
-
-    visual_odometry_node = ComposableNode(
-        name='visual_odometry_node',
-        package='isaac_ros_visual_odometry',
+    
+    visual_slam_node = ComposableNode(
+        name='visual_slam_node',
+        package='isaac_ros_visual_slam',
         namespace='camera',
-        plugin='isaac_ros::visual_odometry::VisualOdometryNode',
+        plugin='isaac_ros::visual_slam::VisualSlamNode',
         parameters=[{
                     'enable_rectified_pose': False,
                     'denoise_input_images': False,
                     'rectified_images': True,
                     'enable_debug_mode': False,
-                    'enable_imu': True,
                     'debug_dump_path': '/tmp/elbrus',
-                    'left_camera_frame': 'camera_infra1_frame',
-                    'right_camera_frame': 'camera_infra2_frame',
-                    'fixed_frame': 'odom',
-                    'imu_frame': 'camera_imu_optical_frame',
-                    'current_smooth_frame': 'base_link',
-                    'current_rectified_frame': 'base_link_rect'
+                    'enable_slam_visualization': True,
+                    'enable_landmarks_view': True,
+                    'enable_observations_view': True,
+                    'enable_imu': True,
+                    'map_frame': 'map',
+                    'odom_frame': 'odom',
+                    'base_frame': 'base_link',
+                    'input_imu_frame': 'camera_imu_optical_frame',
+                    'input_left_camera_frame': 'camera_infra1_frame',
+                    'input_right_camera_frame': 'camera_infra2_frame'
                     }],
         remappings=[('stereo_camera/left/image', 'infra1/image_rect_raw'),
                     ('stereo_camera/left/camera_info', 'infra1/camera_info'),
                     ('stereo_camera/right/image', 'infra2/image_rect_raw'),
                     ('stereo_camera/right/camera_info', 'infra2/camera_info'),
-                    ('visual_odometry/imu', 'imu')]
+                    ('visual_slam/imu', 'imu')]
     )
 
-    visual_odometry_launch_container = ComposableNodeContainer(
-        name='visual_odometry_launch_container',
+    vslam_launch_container = ComposableNodeContainer(
+        name='vslam_launch_container',
         namespace='camera',
         package='rclcpp_components',
         executable='component_container',
         composable_node_descriptions=[
-            visual_odometry_node
+            visual_slam_node
         ],
         output='screen'
     )
@@ -108,4 +111,4 @@ def generate_launch_description():
         arguments = [urdf]
         )
 
-    return launch.LaunchDescription([visual_odometry_launch_container, realsense_camera_node, model_node])
+    return launch.LaunchDescription([vslam_launch_container, realsense_camera_node, model_node])

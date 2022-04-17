@@ -5,5 +5,5 @@
     local-name: isaac_ros_image_pipeline
     uri: https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_image_pipeline.git
 - git:
-    local-name: isaac_ros_visual_odometry
-    uri: https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_visual_odometry.git
+    local-name: isaac_ros_visual_slam
+    uri: https://github.com/NVIDIA-ISAAC-ROS/isaac_ros_visual_slam.git
