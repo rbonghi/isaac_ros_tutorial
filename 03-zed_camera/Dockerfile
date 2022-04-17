@@ -29,11 +29,12 @@ ARG ZED_SDK_MINOR=7
 
 #This environment variable is needed to use the streaming features on Jetson inside a container
 # install options: silent, runtime_only, skip_tools, skip_od_module, skip_python
+# Example link: https://download.stereolabs.com/zedsdk/3.7/l4t32.7/jetsons
 ENV LOGNAME root
 RUN apt-get update -y && \
     apt-get install --no-install-recommends lsb-release wget less udev sudo apt-transport-https build-essential cmake -y && \
     echo "# R32 (release), REVISION: ${L4T_MINOR_VERSION}" > /etc/nv_tegra_release && \
-    wget -q --no-check-certificate -O ZED_SDK_Linux_JP.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/jp${JETPACK_MAJOR}${JETPACK_MINOR}/jetsons && \
+    wget -q --no-check-certificate -O ZED_SDK_Linux_JP.run https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/l4t${L4T}/jetsons && \
     chmod +x ZED_SDK_Linux_JP.run ; ./ZED_SDK_Linux_JP.run silent skip_tools skip_python skip_od_module && \
     rm -rf /usr/local/zed/resources/* \
     rm -rf ZED_SDK_Linux_JP.run && \
@@ -66,7 +67,7 @@ RUN apt-get update && \
 # Pull LFS files
 RUN cd ${ISAAC_ROS_WS}/src/isaac_ros_common && git lfs pull && \
     cd ${ISAAC_ROS_WS}/src/isaac_ros_image_pipeline && git lfs pull && \
-    cd ${ISAAC_ROS_WS}/src/isaac_ros_visual_odometry && git lfs pull
+    cd ${ISAAC_ROS_WS}/src/isaac_ros_visual_slam && git lfs pull
 
 # Change workdir
 WORKDIR $ISAAC_ROS_WS

@@ -96,46 +96,44 @@ def generate_launch_description():
         }.items()
     )
 
-    visual_odometry_node = ComposableNode(
-        name='visual_odometry_node',
-        package='isaac_ros_visual_odometry',
-        plugin='isaac_ros::visual_odometry::VisualOdometryNode',
+    visual_slam_node = ComposableNode(
+        name='visual_slam_node',
+        package='isaac_ros_visual_slam',
         namespace='camera',
+        plugin='isaac_ros::visual_slam::VisualSlamNode',
         parameters=[{
                     'enable_rectified_pose': False,
                     'denoise_input_images': False,
                     'rectified_images': True,
                     'enable_debug_mode': False,
-                    'enable_imu': True,
                     'debug_dump_path': '/tmp/elbrus',
-                    'left_camera_frame': f"{camera_name}_left_camera_frame",
-                    'right_camera_frame': f"{camera_name}_right_camera_frame",
-                    'imu_frame': f"{camera_name}_imu_link",
-                    'fixed_frame': 'odom',
-                    'current_smooth_frame': 'base_link',
-                    'current_rectified_frame': 'base_link_rectified'
+                    'enable_slam_visualization': True,
+                    'enable_landmarks_view': True,
+                    'enable_observations_view': True,
+                    'enable_imu': True,
+                    'map_frame': 'map',
+                    'odom_frame': 'odom',
+                    'base_frame': 'base_link',
+                    'input_imu_frame': f"{camera_name}_imu_link",
+                    'input_left_camera_frame': f"{camera_name}_left_camera_frame",
+                    'input_right_camera_frame': f"{camera_name}_right_camera_frame"
                     }],
-        remappings=[('stereo_camera/left/camera_info',
-                     f"/{camera_name}/zed_node/left/camera_info"),
-                    ('stereo_camera/right/camera_info',
-                     f"/{camera_name}/zed_node/right/camera_info"),
-                    ('stereo_camera/left/image',
-                     f"/{camera_name}/zed_node/left/image_rect_gray"),
-                    ('stereo_camera/right/image',
-                     f"/{camera_name}/zed_node/right/image_rect_gray"),
-                    ('visual_odometry/imu',
-                     f"/{camera_name}/zed_node/imu/data")],
+        remappings=[('stereo_camera/left/image', f"/{camera_name}/zed_node/left/image_rect_gray"),
+                    ('stereo_camera/left/camera_info', f"/{camera_name}/zed_node/left/camera_info"),
+                    ('stereo_camera/right/image', f"/{camera_name}/zed_node/right/image_rect_gray"),
+                    ('stereo_camera/right/camera_info', f"/{camera_name}/zed_node/right/camera_info"),
+                    ('visual_slam/imu', f"/{camera_name}/zed_node/imu/data")]
     )
 
-    visual_odometry_launch_container = ComposableNodeContainer(
-        name='visual_odometry_launch_container',
+    vslam_launch_container = ComposableNodeContainer(
+        name='vslam_launch_container',
         namespace='camera',
         package='rclcpp_components',
         executable='component_container',
         composable_node_descriptions=[
-            visual_odometry_node
+            visual_slam_node
         ],
         output='screen'
     )
 
-    return launch.LaunchDescription([zed_wrapper_launch, visual_odometry_launch_container])
+    return launch.LaunchDescription([zed_wrapper_launch, vslam_launch_container])
