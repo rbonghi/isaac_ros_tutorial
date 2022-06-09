@@ -100,9 +100,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 RUN . /opt/ros/$ROS_DISTRO/install/setup.sh && \
     cd ${ROS_ROOT} && \
-    rosdep install -y --ignore-src --from-paths src --rosdistro foxy && \
+    rosdep install -y --ignore-src --from-paths src --rosdistro foxy \
+    --skip-keys "libopencv-dev libopencv-contrib-dev libopencv-imgproc-dev python-opencv python3-opencv" && \
     colcon build --merge-install --packages-up-to pcl_conversions sensor_msgs_py diagnostic_updater xacro \
-    camera_calibration_parsers image_transport image_common camera_info_manager && \
+    camera_calibration_parsers image_transport image_common camera_info_manager \
+    image_publisher depth_image_proc image_proc image_view image_rotate stereo_image_proc compressed_image_transport compressed_depth_image_transport && \
     rm -Rf src logs build
 
 # Install gcc8 for cross-compiled binaries from Ubuntu 20.04
